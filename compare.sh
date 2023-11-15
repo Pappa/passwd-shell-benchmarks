@@ -33,7 +33,7 @@ if [ -n "$(which cargo 2>/dev/null)" ]; then
 	cargo build --release --all-features --target-dir ..
 	cd ".."
 else
-	echo "cargo was not f ound"
+	echo "cargo was not found"
 fi
 
 # Check for golang compiler
@@ -124,11 +124,19 @@ else
 	echo "LuaJIT not found."
 fi
 
-LIST="${LUA} ${CPROG} ${RSPROG} ${GOPROG} ${NODEPROG} ${PYPROG} ${PLPROG} ${JLPROG} ${LISPPROG} ${RBPROG} ${AWK} ${CRPROG} ${PHP} ${PSHELL}"
-
-	for i in ${LUA} ${CPROG} ${RSPROG} ${GOPROG} ${NODEPROG} ${PYPROG} ${PLPROG} ${JLPROG} ${LISPPROG} ${RBPROG} ${AWK} ${CRPROG} ${PHP} ${PSHELL}; do
-		echo "################################################"
-		echo "$i"
-		$TIME -f "%E\nMax memory usage: %MK" "./${i}"
-	done
+# Check for Haskell compiler
+if [ -n "$(which ghc 2>/dev/null)" ]; then
+	HSPROG=getshells-hs
+	ghc getshells.hs
+	mv getshells ${HSPROG}
+else
+	echo "Haskell compiler not found."
 fi
+
+LIST="${LUA} ${CPROG} ${RSPROG} ${GOPROG} ${NODEPROG} ${PYPROG} ${PLPROG} ${JLPROG} ${LISPPROG} ${RBPROG} ${AWK} ${CRPROG} ${PHP} ${PSHELL} ${HSPROG}"
+
+for i in ${LUA} ${CPROG} ${RSPROG} ${GOPROG} ${NODEPROG} ${PYPROG} ${PLPROG} ${JLPROG} ${LISPPROG} ${RBPROG} ${AWK} ${CRPROG} ${PHP} ${PSHELL} ${HSPROG}; do
+    echo "################################################"
+    echo "$i"
+    $TIME -f "%E\nMax memory usage: %MK" "./${i}"
+done

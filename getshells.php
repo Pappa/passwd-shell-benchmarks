@@ -1,4 +1,5 @@
 #!/usr/bin/env php
+# first cut at a php cli implementation
 
 <?php
 $shellcount = array();

@@ -1,16 +1,20 @@
-import Data.List (group, reverse, sort)
+import Data.List (reverse)
+import Data.Map (fromListWith, toList)
 import System.IO ()
 
 main :: IO ()
 main = do
   contents <- readFile "passwd"
-  let counts = map count $ group $ sort $ map getShell $ lines contents
-  let output = map (\(shell, n) -> shell ++ ": " ++ show n) counts
+  let shells = getFrequency . map getShell $ lines contents
+  let output = map formatOutput shells
 
   mapM_ putStrLn output
 
 getShell :: String -> String
-getShell = takeWhile (/= '\r') . reverse . takeWhile (/= ':') . reverse
+getShell = reverse . takeWhile (/= ':') . dropWhile (== '\r') . reverse
 
-count :: [String] -> (String, Int)
-count l = (head l, length l)
+getFrequency :: [String] -> [(String, Int)]
+getFrequency xs = toList $ fromListWith (+) $ map (\x -> (x, 1)) xs
+
+formatOutput :: (String, Int) -> String
+formatOutput (shell, n) = shell ++ ": " ++ show n
